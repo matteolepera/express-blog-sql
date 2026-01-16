@@ -49,17 +49,35 @@ function index(req, res) {
 //SHOW
 
 function show(req, res) {
-    const id = parseInt(req.params.id);
-    const win = (ferrariWins.find(win => win.id === id))
-    if (win !== undefined) {
-        res.json(win);
-    } else {
-        res.status(404)
-        res.json({
-            error: "Not found",
-            message: "Vittoria inesistente",
-        })
-    }
+    // const id = parseInt(req.params.id);
+    // const win = (ferrariWins.find(win => win.id === id))
+    // if (win !== undefined) {
+    //     res.json(win);
+    // } else {
+    //     res.status(404)
+    //     res.json({
+    //         error: "Not found",
+    //         message: "Vittoria inesistente",
+    //     })
+    // }
+    const id = req.params.id;
+    const query = "SELECT * FROM posts WHERE posts.id = ?"
+    connection.query(query, [id], (err, result) => {
+        if (err) {
+            return res.status(500).json({
+                error: err,
+                message: "Errore del server",
+            })
+        }
+        if (result.length === 0) {
+            res.status(404).json({
+                error: "Not found",
+                message: "Vittoria inesistente",
+            })
+        } else {
+            res.json(result[0])
+        }
+    })
 
 }
 
