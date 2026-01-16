@@ -60,22 +60,58 @@ function show(req, res) {
     //         message: "Vittoria inesistente",
     //     })
     // }
+    // const id = req.params.id;
+    // const query = "SELECT * FROM posts WHERE posts.id = ?"
+    // connection.query(query, [id], (err, result) => {
+    //     if (err) {
+    //         return res.status(500).json({
+    //             error: err,
+    //             message: "Errore del server",
+    //         })
+    //     }
+    //     if (result.length === 0) {
+    //         res.status(404).json({
+    //             error: "Not found",
+    //             message: "Vittoria inesistente",
+    //         })
+    //     } else {
+    //         res.json(result[0])
+    //     }
+    // })
     const id = req.params.id;
-    const query = "SELECT * FROM posts WHERE posts.id = ?"
-    connection.query(query, [id], (err, result) => {
+    const postsQuery = "SELECT * FROM posts WHERE posts.id = ?"
+    connection.query(postsQuery, [id], (err, pResult) => {
         if (err) {
             return res.status(500).json({
                 error: err,
                 message: "Errore del server",
             })
         }
-        if (result.length === 0) {
+        if (pResult.length === 0) {
             res.status(404).json({
                 error: "Not found",
                 message: "Vittoria inesistente",
             })
         } else {
-            res.json(result[0])
+            const tagsQuery = `
+            SELECT tags.id, tags.label AS tag_name
+            FROM tags
+            INNER JOIN post_tag
+            ON tags.id = post_tag.tag_id
+            WHERE post_tag.post_id = ?`
+            connection.query(tagsQuery, [id], (err, tResult) => {
+                if (err) {
+                    return res.status(500).json({
+                        error: err,
+                        message: "Errore del server",
+                    })
+                }
+                const post = {
+                    ...pResult[0],
+                    tags: tResult,
+                }
+                res.json(post)
+            })
         }
     })
 
