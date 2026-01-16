@@ -1,34 +1,48 @@
 import { error, log } from "node:console";
 import { ferrariWins } from "../data/data.js";
 import { parse } from "node:path";
+import connection from "../data/db.js";
 
 //INDEX
 function index(req, res) {
-    const pilot = req.query.pilot;
-    const track = req.query.track;
-    const season = req.query.season;
-    let response = "";
+    // const pilot = req.query.pilot;
+    // const track = req.query.track;
+    // const season = req.query.season;
+    // let response = "";
 
 
-    if (pilot !== undefined) {
-        response = filterCategory("pilot", pilot)
-    } else if (track !== undefined) {
-        response = filterCategory("track", track)
-    } else if (season !== undefined) {
-        response = filterCategory("season", season)
-    } else {
-        response = {
-            info: {
-                totalWins: ferrariWins.length,
-                leclerWins: driverTotalWin("leclerc"),
-                sainzWins: driverTotalWin("sainz"),
-            },
-            results: ferrariWins,
+    // if (pilot !== undefined) {
+    //     response = filterCategory("pilot", pilot)
+    // } else if (track !== undefined) {
+    //     response = filterCategory("track", track)
+    // } else if (season !== undefined) {
+    //     response = filterCategory("season", season)
+    // } else {
+    //     response = {
+    //         info: {
+    //             totalWins: ferrariWins.length,
+    //             leclerWins: driverTotalWin("leclerc"),
+    //             sainzWins: driverTotalWin("sainz"),
+    //         },
+    //         results: ferrariWins,
+    //     }
+    // }
+    // res.json(response);
+
+    const query = "SELECT * FROM `posts`"
+    connection.query(query, (err, result) => {
+        if (err) {
+            return res.status(500).json({
+                error: err,
+                message: "Errore del server",
+            })
         }
-    }
-    res.json(response);
 
-
+        res.json({
+            totalPosts: result.length,
+            posts: result,
+        })
+    })
 
 }
 
