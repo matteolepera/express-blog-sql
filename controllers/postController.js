@@ -119,19 +119,34 @@ function modify(req, res) {
 }
 //DESTROY
 function destroy(req, res) {
-    const id = parseInt(req.params.id)
-    const index = (ferrariWins.findIndex(win => win.id === id))
-    if (index === -1) {
-        res.status(404)
-        res.json({
-            error: "Not found",
-            message: "Vittoria inesistente"
-        })
-    }
-    else {
-        ferrariWins.splice(index, 1)
+    // const id = parseInt(req.params.id)
+    // const index = (ferrariWins.findIndex(win => win.id === id))
+    // if (index === -1) {
+    //     res.status(404)
+    //     res.json({
+    //         error: "Not found",
+    //         message: "Vittoria inesistente"
+    //     })
+    // }
+    // else {
+    //     ferrariWins.splice(index, 1)
+    //     res.sendStatus(204)
+    // }
+
+
+    const id = req.params.id
+    const query = "DELETE FROM `posts` WHERE id = ?"
+
+    connection.query(query, [id], (err) => {
+        if (err) {
+            return res.status(500).json({
+                error: err,
+                message: "Errore del server",
+            })
+        }
+
         res.sendStatus(204)
-    }
+    })
 }
 
 //OTHER FUNCTION
